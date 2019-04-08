@@ -7000,6 +7000,12 @@ react-scripts@2.1.8:
   optionalDependencies:
     fsevents "1.2.4"
 
+react-toasts@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-toasts/-/react-toasts-3.0.2.tgz#2acb97291a02d09e8d03dbfc38b5e50831752423"
+  dependencies:
+    watchable-stores "^2.0.2"
+
 react@^16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
@@ -8435,6 +8441,10 @@ watch@~0.18.0:
   dependencies:
     exec-sh "^0.2.0"
     minimist "^1.2.0"
+
+watchable-stores@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/watchable-stores/-/watchable-stores-2.0.2.tgz#38c03b73019e704d5f4741541b0dfbe9169c86bb"
 
 watchpack@^1.5.0:
   version "1.6.0"

@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import {ToastsContainer, ToastsStore} from 'react-toasts';
+
 import {
     Select,
     Container,
@@ -46,55 +48,87 @@ class App extends Component {
     }
 
     async fetchUsers() {
-        const r = await api.getUsers();
+        try {
+            const r = await api.getUsers();
 
 
-        this.setState({
-            users: r.data.map(item => ({
-                key: item.id,
-                value: item.id,
-                text: item.username,
-            })),
-        });
+            this.setState({
+                users: r.data.map(item => ({
+                    key: item.id,
+                    value: item.id,
+                    text: item.username,
+                })),
+            });
+            ToastsStore.success('Users fetched');
+
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
     }
 
     async handleUserChange(e, { value }) {
         console.log(value);
 
-        const r = await api.getIntegrations(value);
-        this.setState({
-            integration: r.data, integrationsSettings: r.data.reduce((accum, item) => ({
-                ...accum,
-                [item._id]: item.settings,
-            }), {}),
-            currentUser: value,
-        });
+        try {
+            const r = await api.getIntegrations(value);
+            this.setState({
+                integration: r.data, integrationsSettings: r.data.reduce((accum, item) => ({
+                    ...accum,
+                    [item._id]: item.settings,
+                }), {}),
+                currentUser: value,
+            });
+            ToastsStore.success('integrations fetched');
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
 
     }
 
     async fetchAvailableIntegration() {
-        const r = await api.getAvailableIntegration();
+        try {
+            const r = await api.getAvailableIntegration();
 
 
-        this.setState({ availableIntegrations: r.data.providers, events: r.data.events });
+            this.setState({ availableIntegrations: r.data.providers, events: r.data.events });
+            ToastsStore.success('Available integrations fetched');
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
     }
 
     async syncChange(integrationId, eventName, value) {
-        api.setEvents(integrationId, eventName, value);
+        try {
+            await api.setEvents(integrationId, eventName, value);
+            ToastsStore.success('saved');
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
+
     }
 
     async saveSettings(integrationId) {
-        const res = await api.updateSettings(integrationId, this.state.integrationsSettings[integrationId]);
+        try {
 
-        console.log(res);
+            const res = await api.updateSettings(integrationId, this.state.integrationsSettings[integrationId]);
+            ToastsStore.success('saved');
+            console.log(res);
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
     }
 
     async sendNotify(event) {
-        const data = eventExamples[event];
+        try {
+            const data = eventExamples[event];
 
-        const res = await api.sendNotify(this.state.currentUser, event, data);
+            const res = await api.sendNotify(this.state.currentUser, event, data);
 
-        console.log(res);
+            console.log(res);
+            ToastsStore.success('notify sended');
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
     }
 
     syncIntegrationsSettings(value, settingsField, id) {
@@ -191,6 +225,7 @@ class App extends Component {
                     )}
 
                 </Container>
+                <ToastsContainer store={ToastsStore}/>
             </div>
         );
     }

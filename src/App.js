@@ -34,6 +34,7 @@ class App extends Component {
             events: [],
             integrationsSettings: {},
             currentUser: null,
+            integrationSettingsValue: '',
             userName: 'defaultUser',
         };
 
@@ -45,6 +46,7 @@ class App extends Component {
         this.sendNotify = this.sendNotify.bind(this);
 
         this.createUser = this.createUser.bind(this);
+        this.createIntegration = this.createIntegration.bind(this);
 
 
         this.fetchAvailableIntegration().then(() => this.fetchUsers());
@@ -144,6 +146,19 @@ class App extends Component {
         }
     }
 
+    async createIntegration() {
+        try {
+            await api.addIntegration(this.state.integrationCreatingId, this.state.currentUser, {
+                [providers[this.state.integrationCreatingId].settingsField]: this.state.integrationSettingsValue,
+            });
+            this.handleUserChange(null, { value: this.state.currentUser });
+            ToastsStore.success('integration created');
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
+        console.log(this.state.integrationSettingsValue, this.state.integrationCreatingId);
+    }
+
     syncIntegrationsSettings(value, settingsField, id) {
         console.log(this.state);
         console.log(value, settingsField, id);
@@ -198,6 +213,46 @@ class App extends Component {
                             <Divider horizontal>
                                 <Header as='h4'>
                                     <Icon name='bar chart'/>
+                                    Create integration
+                                </Header>
+                            </Divider>
+
+                            <Container>
+                                <Card fluid>
+                                    <Card.Content>
+                                        <List>
+                                            <List.Item>
+                                                <Select placeholder='Select integration to create'
+                                                        options={Object.keys(providers)
+                                                            .map(item => ({
+                                                                text: item,
+                                                                key: item,
+                                                                value: item,
+                                                            }))}
+                                                        onChange={(e, { value }) => this.setState({ integrationCreatingId: value })}/>
+                                            </List.Item>
+                                            {this.state.integrationCreatingId && <List.Item>
+                                                <Form.Field inline style={{ marginTop: '10px' }}>
+                                                    <Input type='text'
+                                                           value={this.state.integrationSettingsValue}
+                                                           onChange={(e, { value }) => this.setState({ integrationSettingsValue: value })}
+                                                           style={{ width: '20%' }}/>
+                                                    <Label
+                                                        pointing='left'>{providers[this.state.integrationCreatingId].label}</Label>
+                                                </Form.Field>
+                                            </List.Item>}
+                                            {this.state.integrationCreatingId && <List.Item>
+                                                <Button primary
+                                                        onClick={this.createIntegration}>Add</Button>
+                                            </List.Item>}
+                                        </List>
+                                    </Card.Content>
+                                </Card>
+                            </Container>
+
+                            <Divider horizontal>
+                                <Header as='h4'>
+                                    <Icon name='bar chart'/>
                                     Integrations
                                 </Header>
                             </Divider>
@@ -208,9 +263,6 @@ class App extends Component {
                                         <Card.Content>
                                             <Card.Header>{item.integrationType}</Card.Header>
                                             <Card.Description>
-                                                <List>
-
-                                                </List>
                                                 <List>
                                                     {this.state.availableIntegrations[item.integrationType].map(event => (
                                                         <List.Item

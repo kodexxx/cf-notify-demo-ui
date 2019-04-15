@@ -70,6 +70,18 @@ class Api {
             },
         });
     }
+
+    addIntegration(integrationType, userId, settings) {
+        return axios({
+            method: 'POST',
+            url: config.apiUri + '/integration',
+            data: {
+                integrationType,
+                userId,
+                settings,
+            },
+        });
+    }
 }
 
 

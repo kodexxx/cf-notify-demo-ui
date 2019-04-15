@@ -34,6 +34,7 @@ class App extends Component {
             events: [],
             integrationsSettings: {},
             currentUser: null,
+            userName: 'defaultUser',
         };
 
 
@@ -42,6 +43,8 @@ class App extends Component {
         this.handleUserChange = this.handleUserChange.bind(this);
         this.syncIntegrationsSettings = this.syncIntegrationsSettings.bind(this);
         this.sendNotify = this.sendNotify.bind(this);
+
+        this.createUser = this.createUser.bind(this);
 
 
         this.fetchAvailableIntegration().then(() => this.fetchUsers());
@@ -131,6 +134,16 @@ class App extends Component {
         }
     }
 
+    async createUser() {
+        try {
+            await api.createUser(this.state.userName);
+            ToastsStore.success('user created');
+            this.fetchUsers();
+        } catch (e) {
+            ToastsStore.error(e.message);
+        }
+    }
+
     syncIntegrationsSettings(value, settingsField, id) {
         console.log(this.state);
         console.log(value, settingsField, id);
@@ -145,9 +158,31 @@ class App extends Component {
         return (
             <div className="App">
                 <Container style={{ marginTop: '3em' }}>
+
                     <Header as={'h1'}>
                         CF-Notification-System
                     </Header>
+                    <Divider horizontal>
+                        <Header as='h4'>
+                            <Icon name='user'/>
+                            Create user
+                        </Header>
+                    </Divider>
+                    <Container>
+                        <Input
+                            action={{
+                                color: 'teal',
+                                labelPosition: 'right',
+                                icon: 'user',
+                                content: 'Create user',
+                                onClick: this.createUser,
+                            }}
+                            value={this.state.userName}
+                            onChange={(_, { value }) => this.setState({ userName: value })}
+                            placeholder={'Username'}
+
+                        />
+                    </Container>
                     <Divider horizontal>
                         <Header as='h4'>
                             <Icon name='user'/>

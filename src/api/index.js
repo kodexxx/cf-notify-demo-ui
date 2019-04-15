@@ -60,6 +60,16 @@ class Api {
             },
         });
     }
+
+    createUser(username) {
+        return axios({
+            method: 'POST',
+            url: config.apiUri + '/user',
+            data: {
+                username,
+            },
+        });
+    }
 }
 
 
